@@ -1,11 +1,13 @@
 # 3D-Cube-Web-Browser
 Something my friends asked me to make. A 3D cube with 6 WebView on each side. Made with JavaFX.
 
+I hardcoded each WebView as I wanted to finish this quickly. So there is alot of repeated code.
+
 ## Notes
 
 Remeber to add JavaFX components to your project.
 
-I'm using IntelliJ.
+I'm using IntelliJ Idea.
 
 Go to File ➜ Project Structure ➜ Libraries ➜ + ➜ Java ➜ Add the JavaFX_Path/lib
 
