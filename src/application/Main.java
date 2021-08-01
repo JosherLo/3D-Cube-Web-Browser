@@ -41,13 +41,6 @@ public class Main extends Application {
     public static int DEPTH = 800;
     private Rotate rotationX, rotationY;
 
-    private DoubleProperty angleX = new SimpleDoubleProperty(80);
-    private DoubleProperty angleY = new SimpleDoubleProperty(30);
-    private Group group;
-    public static int HEIGHT = 700;
-    public static int WIDTH = 500;
-    public static int DEPTH = 400;
-
     @Override
     public void start(Stage stage) throws Exception {
         Group group1 = new Group();
@@ -144,8 +137,7 @@ public class Main extends Application {
             group.translateZProperty().set(group.getTranslateZ() - change);
         });
 
-        group1.translateXProperty().bind(scene.widthProperty().divide(2));
-        group1.translateYProperty().bind(scene.heightProperty().divide(2));
+
         group.translateYProperty().set(10);
         group.translateZProperty().set(1000);
     }
