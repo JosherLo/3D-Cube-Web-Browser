@@ -3,5 +3,5 @@ module ThreeDCubeWebBrowser {
     requires javafx.graphics;
     requires javafx.controls;
     requires javafx.web;
-    opens appplication;
+    opens application;
 }

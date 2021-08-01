@@ -6,18 +6,41 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Box;
+import javafx.scene.text.Font;
+
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
+
 import javafx.scene.transform.Rotate;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+
+import java.util.Scanner;
 
 public class Main extends Application {
     private double X, Y;
     private double rotationAngleX = 0;
     private double rotationAngleY = 0;
+
+    private DoubleProperty angleX = new SimpleDoubleProperty(31);
+    private DoubleProperty angleY = new SimpleDoubleProperty(32);
+    private Group group;
+    public static int HEIGHT = 800;
+    public static int WIDTH = 800;
+    public static int DEPTH = 800;
+    private Rotate rotationX, rotationY;
+
     private DoubleProperty angleX = new SimpleDoubleProperty(80);
     private DoubleProperty angleY = new SimpleDoubleProperty(30);
     private Group group;
@@ -31,83 +54,57 @@ public class Main extends Application {
         this.group = new Group();
         Box box = new Box(WIDTH, HEIGHT , DEPTH);
         this.group.getChildren().add(box);
-        StackPane stackPaneFront = new StackPane();
-        WebView webViewFront = new WebView();
-        webViewFront.getEngine().load("https://www.google.com");
-        this.group.getChildren().add(stackPaneFront);
-        stackPaneFront.translateZProperty().set(-DEPTH/2.0 - 1);
-        stackPaneFront.translateXProperty().set(-WIDTH/2.0);
-        stackPaneFront.translateYProperty().set(-HEIGHT/2.0);
-        stackPaneFront.getChildren().add(webViewFront);
-        stackPaneFront.setPrefSize(WIDTH, HEIGHT);
-        stackPaneFront.setMinSize(WIDTH, HEIGHT);
-        stackPaneFront.setMaxSize(WIDTH, HEIGHT);
-        StackPane stackPaneBack = new StackPane();
-        WebView webViewBack = new WebView();
-        webViewBack.getEngine().load("https://www.google.com");
-        this.group.getChildren().add(stackPaneBack);
-        stackPaneBack.getTransforms().add(new Rotate(180, Rotate.Y_AXIS));
-        stackPaneBack.translateZProperty().set(DEPTH/2.0 + 1.0);
-        stackPaneBack.translateXProperty().set(WIDTH/2.0);
-        stackPaneBack.translateYProperty().set(-HEIGHT/2.0);
-        stackPaneBack.getChildren().add(webViewBack);
-        stackPaneBack.setPrefSize(WIDTH, HEIGHT);
-        stackPaneBack.setMinSize(WIDTH, HEIGHT);
-        stackPaneBack.setMaxSize(WIDTH, HEIGHT);
-        StackPane stackPaneLeft = new StackPane();
-        WebView webViewLeft = new WebView();
-        webViewLeft.getEngine().load("https://www.google.com");
-        this.group.getChildren().add(stackPaneLeft);
-        stackPaneLeft.getTransforms().add(new Rotate(90, Rotate.Y_AXIS));
-        stackPaneLeft.translateZProperty().set(DEPTH/2.0);
-        stackPaneLeft.translateXProperty().set(-WIDTH/2.0 - 1);
-        stackPaneLeft.translateYProperty().set(-HEIGHT/2.0);
-        stackPaneLeft.getChildren().add(webViewLeft);
-        stackPaneLeft.setPrefSize(DEPTH, HEIGHT);
-        stackPaneLeft.setMinSize(DEPTH, HEIGHT);
-        stackPaneLeft.setMaxSize(DEPTH, HEIGHT);
-        StackPane stackPaneRight = new StackPane();
-        WebView webViewRight = new WebView();
-        webViewRight.getEngine().load("https://www.google.com");
-        this.group.getChildren().add(stackPaneRight);
-        stackPaneRight.getTransforms().add(new Rotate(-90, Rotate.Y_AXIS));
-        stackPaneRight.translateZProperty().set(-DEPTH/2.0);
-        stackPaneRight.translateXProperty().set(WIDTH/2.0 + 1);
-        stackPaneRight.translateYProperty().set(-HEIGHT/2.0);
-        stackPaneRight.getChildren().add(webViewRight);
-        stackPaneRight.setPrefSize(DEPTH, HEIGHT);
-        stackPaneRight.setMinSize(DEPTH, HEIGHT);
-        stackPaneRight.setMaxSize(DEPTH, HEIGHT);
-        StackPane stackPaneBottom = new StackPane();
-        WebView webViewBottom = new WebView();
-        webViewBottom.getEngine().load("https://www.google.com");
-        this.group.getChildren().add(stackPaneBottom);
-        stackPaneBottom.getTransforms().add(new Rotate(90, Rotate.X_AXIS));
-        stackPaneBottom.translateZProperty().set(-DEPTH/2.0);
-        stackPaneBottom.translateXProperty().set(-WIDTH/2.0);
-        stackPaneBottom.translateYProperty().set(HEIGHT/2.0 + 1);
-        stackPaneBottom.getChildren().add(webViewBottom);
-        stackPaneBottom.setPrefSize(WIDTH, DEPTH);
-        stackPaneBottom.setMinSize(WIDTH, DEPTH);
-        stackPaneBottom.setMaxSize(WIDTH, DEPTH);
-        StackPane stackPaneTop = new StackPane();
-        WebView webViewTop = new WebView();
-        webViewTop.getEngine().load("https://www.google.com");
-        this.group.getChildren().add(stackPaneTop);
-        stackPaneTop.getTransforms().add(new Rotate(-90, Rotate.X_AXIS));
-        stackPaneTop.translateZProperty().set(DEPTH/2.0);
-        stackPaneTop.translateXProperty().set(-WIDTH/2.0);
-        stackPaneTop.translateYProperty().set(-HEIGHT/2.0 - 1);
-        stackPaneTop.getChildren().add(webViewTop);
-        stackPaneTop.setPrefSize(WIDTH, DEPTH);
-        stackPaneTop.setMinSize(WIDTH, DEPTH);
-        stackPaneTop.setMaxSize(WIDTH, DEPTH);
+
+        String[] sides = {"Top", "Left", "Front", "Back", "Right", "Bottom"};
+        Rotate[] rotations = {new Rotate(-90, Rotate.X_AXIS), new Rotate(90, Rotate.Y_AXIS),
+                new Rotate(0, Rotate.Y_AXIS), new Rotate(180, Rotate.Y_AXIS),
+                new Rotate(-90, Rotate.Y_AXIS), new Rotate(90, Rotate.X_AXIS)};
+        double[] tz = {DEPTH/2.0, DEPTH/2.0, -DEPTH/2.0-1, DEPTH/2.0+1, -DEPTH/2.0, -DEPTH/2.0};
+        double[] tx = {-WIDTH/2.0, -WIDTH/2.0-1, -WIDTH/2.0, WIDTH/2.0, WIDTH/2.0+1, -WIDTH/2.0};
+        double[] ty = {-HEIGHT/2.0-1, -HEIGHT/2.0, -HEIGHT/2.0, -HEIGHT/2.0, -HEIGHT/2.0, HEIGHT/2.0+1};
+
+        for (int i=0;i<6;i++) {
+            VBox vbox = new VBox();
+            WebView webView = new WebView();
+            webView.getEngine().load("https://www.google.com");
+            vbox.getTransforms().add(rotations[i]);
+            vbox.translateZProperty().set(tz[i]);
+            vbox.translateXProperty().set(tx[i]);
+            vbox.translateYProperty().set(ty[i]);
+
+            webView.setPrefSize(WIDTH, HEIGHT);
+
+            HBox hbox = new HBox();
+            TextField tf = new TextField("https://www.google.com");
+            tf.setPromptText("Enter URL...");
+            tf.setPrefWidth(WIDTH*0.85);
+            tf.setFont(new Font(25));
+            Button button = new Button(sides[i]);
+            button.setPrefWidth(WIDTH*0.15);
+            button.setFont(new Font(25));
+
+            tf.setOnMouseClicked(e -> {
+                if (tf.getText().equals("")) { tf.setText("https://"); tf.positionCaret(8); }
+            });
+            tf.setOnKeyPressed(e -> { switch (e.getCode()) {
+                case ENTER: button.requestFocus(); webView.getEngine().load(tf.getText());
+            }});
+            button.setOnMouseClicked(e -> { webView.getEngine().load(tf.getText()); });
+
+            hbox.getChildren().addAll(tf, button);
+            vbox.getChildren().addAll(hbox, webView);
+            vbox.setPrefSize(WIDTH, HEIGHT);
+            vbox.setMinSize(WIDTH, HEIGHT);
+            vbox.setMaxSize(WIDTH, HEIGHT);
+            this.group.getChildren().add(vbox);
+        }
+
         group1.getChildren().add(this.group);
         group.translateYProperty().set(-150);
-        Scene scene = new Scene(group1, 600, 600, true);
+        Scene scene = new Scene(group1, 1000, 1000, true);
         PerspectiveCamera camera = new PerspectiveCamera();
         scene.setCamera(camera);
-        scene.setFill(Color.GRAY);
+        scene.setFill(Color.SILVER);
         stage.setScene(scene);
         stage.show();
         initEvents(scene, stage);
@@ -131,6 +128,7 @@ public class Main extends Application {
         scene.setOnMousePressed(me -> {
             this.X = me.getSceneX();
             this.Y = me.getSceneY();
+
             this.rotationAngleX = this.angleX.get();
             this.rotationAngleY = this.angleY.get();
         });
@@ -145,6 +143,11 @@ public class Main extends Application {
             double change = se.getDeltaY();
             group.translateZProperty().set(group.getTranslateZ() - change);
         });
+
+        group1.translateXProperty().bind(scene.widthProperty().divide(2));
+        group1.translateYProperty().bind(scene.heightProperty().divide(2));
+        group.translateYProperty().set(10);
+        group.translateZProperty().set(1000);
     }
 
     public static void main(String[] args) {
