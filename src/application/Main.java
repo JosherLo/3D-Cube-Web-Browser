@@ -6,12 +6,15 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -38,7 +41,6 @@ public class Main extends Application {
 
         // top left front back right bottom
 
-        StackPane[] stackPanes = new StackPane[6];
         Rotate[] rotations = {new Rotate(-90, Rotate.X_AXIS), new Rotate(90, Rotate.Y_AXIS),
                 new Rotate(0, Rotate.Y_AXIS), new Rotate(180, Rotate.Y_AXIS),
                 new Rotate(-90, Rotate.Y_AXIS), new Rotate(90, Rotate.X_AXIS)};
@@ -47,24 +49,44 @@ public class Main extends Application {
         double[] ty = {-HEIGHT/2.0-1, -HEIGHT/2.0, -HEIGHT/2.0, -HEIGHT/2.0, -HEIGHT/2.0, HEIGHT/2.0+1};
 
         for (int i=0;i<6;i++) {
-            StackPane stackPane = new StackPane();
+            VBox vbox = new VBox();
             WebView webView = new WebView();
             webView.getEngine().load("https://www.google.com");
-            this.group.getChildren().add(stackPane);
-            stackPane.getTransforms().add(rotations[i]);
-            stackPane.translateZProperty().set(tz[i]);
-            stackPane.translateXProperty().set(tx[i]);
-            stackPane.translateYProperty().set(ty[i]);
-            stackPane.getChildren().add(webView);
-            stackPane.setPrefSize(WIDTH, HEIGHT);
-            stackPane.setMinSize(WIDTH, HEIGHT);
-            stackPane.setMaxSize(WIDTH, HEIGHT);
-            stackPanes[i] = stackPane;
+            vbox.getTransforms().add(rotations[i]);
+            vbox.translateZProperty().set(tz[i]);
+            vbox.translateXProperty().set(tx[i]);
+            vbox.translateYProperty().set(ty[i]);
+
+            webView.setPrefSize(WIDTH, HEIGHT);
+
+            HBox hbox = new HBox();
+            TextField tf = new TextField();
+            tf.setPromptText("Enter URL...");
+            tf.setPrefWidth(WIDTH*0.9);
+            tf.setFont(new Font(25));
+            Button button = new Button("Go");
+            button.setPrefWidth(WIDTH*0.1);
+            button.setFont(new Font(25));
+
+            tf.setOnMouseClicked(e -> {
+                if (tf.getText().equals("")) { tf.setText("https://"); tf.positionCaret(8); }
+            });
+            tf.setOnKeyPressed(e -> { switch (e.getCode()) {
+                case ENTER: button.requestFocus(); webView.getEngine().load(tf.getText());
+            }});
+            button.setOnMouseClicked(e -> { webView.getEngine().load(tf.getText()); });
+
+            hbox.getChildren().addAll(tf, button);
+            vbox.getChildren().addAll(hbox, webView);
+            vbox.setPrefSize(WIDTH, HEIGHT);
+            vbox.setMinSize(WIDTH, HEIGHT);
+            vbox.setMaxSize(WIDTH, HEIGHT);
+            this.group.getChildren().add(vbox);
         }
 
         group1.getChildren().add(this.group);
         group.translateYProperty().set(-150);
-        Scene scene = new Scene(group1, 1000, 800, true);
+        Scene scene = new Scene(group1, 1000, 1000, true);
         PerspectiveCamera camera = new PerspectiveCamera();
         scene.setCamera(camera);
         scene.setFill(Color.SILVER);
@@ -75,14 +97,6 @@ public class Main extends Application {
         group1.translateYProperty().bind(scene.heightProperty().divide(2));
         this.group.translateYProperty().set(-10);
         group.translateZProperty().set(1000);
-
-//        Scanner s = new Scanner(System.in);
-//        while (true) {
-//            System.out.print("Change URL of: ");
-//            int fn = s.nextInt();
-//            System.out.print("to: ");
-//            String url = s.nextLine();
-//        }
     }
 
     public void initEvents(Scene scene, Stage stage) {
