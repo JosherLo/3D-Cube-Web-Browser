@@ -25,12 +25,13 @@ public class Main extends Application {
     private double X, Y;
     private double rotationAngleX = 0;
     private double rotationAngleY = 0;
-    private DoubleProperty angleX = new SimpleDoubleProperty(80);
-    private DoubleProperty angleY = new SimpleDoubleProperty(30);
+    private DoubleProperty angleX = new SimpleDoubleProperty(31);
+    private DoubleProperty angleY = new SimpleDoubleProperty(32);
     private Group group;
     public static int HEIGHT = 800;
     public static int WIDTH = 800;
     public static int DEPTH = 800;
+    private Rotate rotationX, rotationY;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -39,8 +40,7 @@ public class Main extends Application {
         Box box = new Box(WIDTH, HEIGHT , DEPTH);
         this.group.getChildren().add(box);
 
-        // top left front back right bottom
-
+        String[] sides = {"Top", "Left", "Front", "Back", "Right", "Bottom"};
         Rotate[] rotations = {new Rotate(-90, Rotate.X_AXIS), new Rotate(90, Rotate.Y_AXIS),
                 new Rotate(0, Rotate.Y_AXIS), new Rotate(180, Rotate.Y_AXIS),
                 new Rotate(-90, Rotate.Y_AXIS), new Rotate(90, Rotate.X_AXIS)};
@@ -60,12 +60,12 @@ public class Main extends Application {
             webView.setPrefSize(WIDTH, HEIGHT);
 
             HBox hbox = new HBox();
-            TextField tf = new TextField();
+            TextField tf = new TextField("https://www.google.com");
             tf.setPromptText("Enter URL...");
-            tf.setPrefWidth(WIDTH*0.9);
+            tf.setPrefWidth(WIDTH*0.85);
             tf.setFont(new Font(25));
-            Button button = new Button("Go");
-            button.setPrefWidth(WIDTH*0.1);
+            Button button = new Button(sides[i]);
+            button.setPrefWidth(WIDTH*0.15);
             button.setFont(new Font(25));
 
             tf.setOnMouseClicked(e -> {
@@ -92,16 +92,6 @@ public class Main extends Application {
         scene.setFill(Color.SILVER);
         stage.setScene(scene);
         stage.show();
-        initEvents(scene, stage);
-        group1.translateXProperty().bind(scene.widthProperty().divide(2));
-        group1.translateYProperty().bind(scene.heightProperty().divide(2));
-        this.group.translateYProperty().set(-10);
-        group.translateZProperty().set(1000);
-    }
-
-    public void initEvents(Scene scene, Stage stage) {
-        Rotate rotationX;
-        Rotate rotationY;
 
         this.group.getTransforms().addAll(
                 rotationX = new Rotate(0, Rotate.X_AXIS),
@@ -121,6 +111,8 @@ public class Main extends Application {
         scene.setOnMouseDragged(de -> {
             this.angleX.set(this.rotationAngleX - (this.Y - de.getSceneY()));
             this.angleY.set(this.rotationAngleY + (this.X - de.getSceneX()));
+            System.out.println(angleX);
+            System.out.println(angleY);
         });
 
 
@@ -128,6 +120,11 @@ public class Main extends Application {
             double change = se.getDeltaY();
             group.translateZProperty().set(group.getTranslateZ() - change);
         });
+
+        group1.translateXProperty().bind(scene.widthProperty().divide(2));
+        group1.translateYProperty().bind(scene.heightProperty().divide(2));
+        group.translateYProperty().set(10);
+        group.translateZProperty().set(1000);
     }
 
     public static void main(String[] args) {
