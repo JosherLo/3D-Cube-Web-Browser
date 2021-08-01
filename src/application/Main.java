@@ -128,9 +128,9 @@ public class Main extends Application {
         rotationX.angleProperty().bind(this.angleX);
         rotationY.angleProperty().bind(this.angleY);
 
-        scene.setOnMousePressed(pe -> {
-            this.X = pe.getSceneX();
-            this.Y = pe.getSceneY();
+        scene.setOnMousePressed(me -> {
+            this.X = me.getSceneX();
+            this.Y = me.getSceneY();
             this.rotationAngleX = this.angleX.get();
             this.rotationAngleY = this.angleY.get();
         });
