@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.ScrollEvent;
@@ -15,6 +16,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.text.Font;
+
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Box;
+
 import javafx.scene.transform.Rotate;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -25,6 +32,7 @@ public class Main extends Application {
     private double X, Y;
     private double rotationAngleX = 0;
     private double rotationAngleY = 0;
+
     private DoubleProperty angleX = new SimpleDoubleProperty(31);
     private DoubleProperty angleY = new SimpleDoubleProperty(32);
     private Group group;
@@ -32,6 +40,13 @@ public class Main extends Application {
     public static int WIDTH = 800;
     public static int DEPTH = 800;
     private Rotate rotationX, rotationY;
+
+    private DoubleProperty angleX = new SimpleDoubleProperty(80);
+    private DoubleProperty angleY = new SimpleDoubleProperty(30);
+    private Group group;
+    public static int HEIGHT = 700;
+    public static int WIDTH = 500;
+    public static int DEPTH = 400;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -92,6 +107,15 @@ public class Main extends Application {
         scene.setFill(Color.SILVER);
         stage.setScene(scene);
         stage.show();
+        initEvents(scene, stage);
+        group1.translateXProperty().bind(scene.widthProperty().divide(2));
+        group1.translateYProperty().bind(scene.heightProperty().divide(2));
+        this.group.translateYProperty().set(-10);
+    }
+
+    public void initEvents(Scene scene, Stage stage) {
+        Rotate rotationX;
+        Rotate rotationY;
 
         this.group.getTransforms().addAll(
                 rotationX = new Rotate(0, Rotate.X_AXIS),
@@ -101,9 +125,10 @@ public class Main extends Application {
         rotationX.angleProperty().bind(this.angleX);
         rotationY.angleProperty().bind(this.angleY);
 
-        scene.setOnMousePressed(pe -> {
-            this.X = pe.getSceneX();
-            this.Y = pe.getSceneY();
+        scene.setOnMousePressed(me -> {
+            this.X = me.getSceneX();
+            this.Y = me.getSceneY();
+
             this.rotationAngleX = this.angleX.get();
             this.rotationAngleY = this.angleY.get();
         });
@@ -111,8 +136,6 @@ public class Main extends Application {
         scene.setOnMouseDragged(de -> {
             this.angleX.set(this.rotationAngleX - (this.Y - de.getSceneY()));
             this.angleY.set(this.rotationAngleY + (this.X - de.getSceneX()));
-            System.out.println(angleX);
-            System.out.println(angleY);
         });
 
 
