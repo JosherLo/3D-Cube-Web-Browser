@@ -6,27 +6,17 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.text.Font;
-
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Box;
-
 import javafx.scene.transform.Rotate;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-
-import java.util.Scanner;
 
 public class Main extends Application {
     private double X, Y;
@@ -36,25 +26,23 @@ public class Main extends Application {
     private DoubleProperty angleX = new SimpleDoubleProperty(31);
     private DoubleProperty angleY = new SimpleDoubleProperty(32);
     private Group group;
-    public static int HEIGHT = 800;
-    public static int WIDTH = 800;
-    public static int DEPTH = 800;
+    public static int LEN = 800;
     private Rotate rotationX, rotationY;
 
     @Override
     public void start(Stage stage) throws Exception {
         Group group1 = new Group();
         this.group = new Group();
-        Box box = new Box(WIDTH, HEIGHT , DEPTH);
+        Box box = new Box(LEN, LEN , LEN);
         this.group.getChildren().add(box);
 
         String[] sides = {"Top", "Left", "Front", "Back", "Right", "Bottom"};
         Rotate[] rotations = {new Rotate(-90, Rotate.X_AXIS), new Rotate(90, Rotate.Y_AXIS),
                 new Rotate(0, Rotate.Y_AXIS), new Rotate(180, Rotate.Y_AXIS),
                 new Rotate(-90, Rotate.Y_AXIS), new Rotate(90, Rotate.X_AXIS)};
-        double[] tz = {DEPTH/2.0, DEPTH/2.0, -DEPTH/2.0-1, DEPTH/2.0+1, -DEPTH/2.0, -DEPTH/2.0};
-        double[] tx = {-WIDTH/2.0, -WIDTH/2.0-1, -WIDTH/2.0, WIDTH/2.0, WIDTH/2.0+1, -WIDTH/2.0};
-        double[] ty = {-HEIGHT/2.0-1, -HEIGHT/2.0, -HEIGHT/2.0, -HEIGHT/2.0, -HEIGHT/2.0, HEIGHT/2.0+1};
+        double[] tz = {LEN/2.0, LEN/2.0, -LEN/2.0-1, LEN/2.0+1, -LEN/2.0, -LEN/2.0};
+        double[] tx = {-LEN/2.0, -LEN/2.0-1, -LEN/2.0, LEN/2.0, LEN/2.0+1, -LEN/2.0};
+        double[] ty = {-LEN/2.0-1, -LEN/2.0, -LEN/2.0, -LEN/2.0, -LEN/2.0, LEN/2.0+1};
 
         for (int i=0;i<6;i++) {
             VBox vbox = new VBox();
@@ -65,17 +53,24 @@ public class Main extends Application {
             vbox.translateXProperty().set(tx[i]);
             vbox.translateYProperty().set(ty[i]);
 
-            webView.setPrefSize(WIDTH, HEIGHT);
+            webView.setPrefSize(LEN, LEN);
 
             HBox hbox = new HBox();
             TextField tf = new TextField("https://www.google.com");
             tf.setPromptText("Enter URL...");
-            tf.setPrefWidth(WIDTH*0.85);
+            tf.setPrefWidth(LEN*0.725);
             tf.setFont(new Font(25));
             Button button = new Button(sides[i]);
-            button.setPrefWidth(WIDTH*0.15);
+            button.setPrefWidth(LEN*0.15);
             button.setFont(new Font(25));
+            Button b2 = new Button("Focus");
+            b2.setPrefWidth(LEN*0.125);
+            b2.setFont(new Font(25));
 
+            int finalI_idkwhyihavetodothisbutintellijsays = i;
+            b2.setOnMouseClicked(e -> {
+                reorientate(finalI_idkwhyihavetodothisbutintellijsays);
+            });
             tf.setOnMouseClicked(e -> {
                 if (tf.getText().equals("")) { tf.setText("https://"); tf.positionCaret(8); }
             });
@@ -84,11 +79,11 @@ public class Main extends Application {
             }});
             button.setOnMouseClicked(e -> { webView.getEngine().load(tf.getText()); });
 
-            hbox.getChildren().addAll(tf, button);
+            hbox.getChildren().addAll(tf, b2, button);
             vbox.getChildren().addAll(hbox, webView);
-            vbox.setPrefSize(WIDTH, HEIGHT);
-            vbox.setMinSize(WIDTH, HEIGHT);
-            vbox.setMaxSize(WIDTH, HEIGHT);
+            vbox.setPrefSize(LEN, LEN);
+            vbox.setMinSize(LEN, LEN);
+            vbox.setMaxSize(LEN, LEN);
             this.group.getChildren().add(vbox);
         }
 
@@ -140,6 +135,13 @@ public class Main extends Application {
 
         group.translateYProperty().set(10);
         group.translateZProperty().set(1000);
+    }
+
+    public void reorientate(int side) {
+        double[] x = {90,0,0,0,0,-90};
+        double[] y = {0,-90,0,180,90,0};
+        angleX.set(x[side]);
+        angleY.set(y[side]);
     }
 
     public static void main(String[] args) {
